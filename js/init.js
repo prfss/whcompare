@@ -31,6 +31,7 @@ init().then(async () => {
 
             document.getElementById("order-by").addEventListener("change", update_summary, false);
             document.getElementById("chart-type").addEventListener("change", update_chart, false);
+            document.getElementById("log-base").addEventListener("change", update_chart, false);
             document.getElementById("plot-type").addEventListener("change", update_chart, false);
             document.getElementById("axis").addEventListener("change", update_chart, false);
             document.getElementById("repr").addEventListener("change", update_chart, false);
