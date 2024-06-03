@@ -1,10 +1,22 @@
 import init, { generate_report, recalculate_chart_data, update_summary as wasm_update_summary } from "../pkg/web.js"
 
 function draw_chart(data, x_ticks_label) {
-    c3.generate({
-        bindto: '#chart-image',
+    let log_scale = document.getElementById("log-scale").checked;
+    let is_scatter = document.getElementById("plot-style").value == "scatter";
+
+    bb.generate({
+        bindto: '#score-chart-image',
         data,
-        axis: { x: { tick: { format: (x) => x_ticks_label[x] } } },
+        axis: {
+            x: { tick: { format: (x) => x_ticks_label[x] } },
+            y: log_scale ? { type: "log" } : null
+        },
+        line: {
+            classes: is_scatter ? ["pseudo-scatter"] : null
+        },
+        tooltip: {
+            order: "desc"
+        }
     });
     katex_render();
 }
@@ -30,11 +42,10 @@ init().then(async () => {
             draw_chart(data, x_ticks_label);
 
             document.getElementById("order-by").addEventListener("change", update_summary, false);
-            document.getElementById("chart-type").addEventListener("change", update_chart, false);
-            document.getElementById("log-base").addEventListener("change", update_chart, false);
-            document.getElementById("plot-type").addEventListener("change", update_chart, false);
+            document.getElementById("plot-style").addEventListener("change", update_chart, false);
             document.getElementById("axis").addEventListener("change", update_chart, false);
             document.getElementById("repr").addEventListener("change", update_chart, false);
+            document.getElementById("log-scale").addEventListener("change", update_chart, false);
         }
     }, false);
 
