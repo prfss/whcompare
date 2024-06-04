@@ -1,4 +1,4 @@
-import init, { generate_report, recalculate_chart_data, update_summary as wasm_update_summary } from "../pkg/web.js"
+import init, { generate_report, recalculate_chart_data } from "../pkg/web.js"
 
 function draw_chart(data, x_ticks_label) {
     let log_scale = document.getElementById("log-scale").checked;
@@ -41,7 +41,6 @@ init().then(async () => {
             const [data, x_ticks_label] = may_data;
             draw_chart(data, x_ticks_label);
 
-            document.getElementById("order-by").addEventListener("change", update_summary, false);
             document.getElementById("plot-style").addEventListener("change", update_chart, false);
             document.getElementById("axis").addEventListener("change", update_chart, false);
             document.getElementById("repr").addEventListener("change", update_chart, false);
