@@ -1,11 +1,8 @@
 import init, { generate_report, recalculate_chart_data } from "../pkg/web.js"
 
-function draw_chart(data, x_ticks_label) {
-    let log_scale = document.getElementById("log-scale").checked;
-    let is_scatter = document.getElementById("plot-style").value == "scatter";
-
+function draw_chart(data, x_ticks_label, bindto, log_scale, is_scatter) {
     bb.generate({
-        bindto: '#score-chart-image',
+        bindto,
         data,
         axis: {
             x: { tick: { format: (x) => x_ticks_label[x] } },
@@ -18,19 +15,25 @@ function draw_chart(data, x_ticks_label) {
             order: "desc"
         }
     });
-    katex_render();
 }
 
-async function update_chart() {
+function draw_score_chart(data, x_tick_label) {
+    let log_scale = document.getElementById("log-scale").checked;
+    let is_scatter = document.getElementById("plot-style").value == "scatter";
+    draw_chart(data, x_tick_label, "#score-chart-image", log_scale, is_scatter);
+}
+
+function draw_time_chart(data, x_tick_label) {
+    draw_chart(data, x_tick_label, "#time-chart-image", false, true);
+}
+
+async function update_score_chart() {
     const may_data = await recalculate_chart_data();
+    console.log(may_data);
     if (may_data?.length ?? 0 >= 2) {
         const [data, x_ticks_label] = may_data;
-        draw_chart(data, x_ticks_label);
+        draw_score_chart(data, x_ticks_label);
     }
-}
-
-async function update_summary() {
-    await wasm_update_summary();
     katex_render();
 }
 
@@ -38,13 +41,15 @@ init().then(async () => {
     document.getElementById("generate-report").addEventListener("click", async () => {
         const may_data = await generate_report();
         if (may_data?.length ?? 0 >= 2) {
-            const [data, x_ticks_label] = may_data;
-            draw_chart(data, x_ticks_label);
+            const [score_data, score_x_ticks_label, time_data, time_x_ticks_label] = may_data;
+            draw_score_chart(score_data, score_x_ticks_label);
+            draw_time_chart(time_data, time_x_ticks_label);
+            katex_render();
 
-            document.getElementById("plot-style").addEventListener("change", update_chart, false);
-            document.getElementById("axis").addEventListener("change", update_chart, false);
-            document.getElementById("repr").addEventListener("change", update_chart, false);
-            document.getElementById("log-scale").addEventListener("change", update_chart, false);
+            document.getElementById("plot-style").addEventListener("change", update_score_chart, false);
+            document.getElementById("axis").addEventListener("change", update_score_chart, false);
+            document.getElementById("repr").addEventListener("change", update_score_chart, false);
+            document.getElementById("log-scale").addEventListener("change", update_score_chart, false);
         }
     }, false);
 
