@@ -16,7 +16,7 @@ function draw_chart(data, x_ticks_label, bindto, log_scale, is_scatter) {
         bindto,
         data,
         axis: {
-            x: { tick: { format: (x) => x_ticks_label[x] } },
+            x: { tick: { show: false, format: (x) => x_ticks_label[x] } },
             y: log_scale ? { type: "log" } : null
         },
         line: {
